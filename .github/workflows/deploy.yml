@@ -1,1 +1,29 @@
 on: push
+jobs:
+  job1:
+    steps:
+      - run:pwd
+      - run:ls
+  job2:
+    steps:
+      - run:node
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Vercel
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
