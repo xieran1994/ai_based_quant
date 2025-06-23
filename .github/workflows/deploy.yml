@@ -3,12 +3,12 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     steps:
-      - run:pwd
-      - run:ls
+      - run: pwd
+      - run: ls
   job2:
     runs-on: windows-latest
     steps:
-      - run:node --version
+      - run: node --version
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +25,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Deploy to Vercel
-        uses: JamesIves/github-pages-deploy-action@3.7.1
-        with:
