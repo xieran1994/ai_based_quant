@@ -1,6 +1,19 @@
+from database.mysql_config import MYSQL_CONFIG
+
+
+
+
+
 def main():
-    print("Hello from ai-based-quant!")
+    # 数据库连接
+    # 回测
+    # 实盘
+    # 。。。
 
 
-if __name__ == "__main__":
+
+
+
+
+if __name__ == '__main__':
     main()
