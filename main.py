@@ -1,7 +1,4 @@
-from database.mysql_config import MYSQL_CONFIG
-
-
-
+from database.mysql import MYSQL
 
 
 def main():
@@ -9,6 +6,7 @@ def main():
     # 回测
     # 实盘
     # 。。。
+    my = MYSQL()
 
 
 
