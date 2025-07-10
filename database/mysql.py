@@ -4,9 +4,10 @@ import sys
 from typing import Union
 
 from config.mysql_config import MYSQL_CONFIG
-from config.logger import Logger
+from loguru import logger
+# from config.logger import Logger
 
-Logger.set_name(new_name = 'MYSQL')
+# Logger.set_name(new_name = 'MYSQL')
 class MYSQL:
     _DEFAULT_CONFIG = MYSQL_CONFIG
     def __init__(self, **kwargs):
@@ -36,9 +37,10 @@ class MYSQL:
                 database=self.database,
                 local_infile=self.local_infile
             )
+            logger.info(f"数据库连接成功")
             return conn
         except Exception as e:
-            Logger.error(f"数据库连接失败: {e}")
+            logger.error(f"数据库连接失败: {e}")
             sys.exit(1)
 
     def load_data_local_infile(self, csv_path: str, table_name: str, delimiter: str = ',', ignore_lines: int = 1) -> None:
@@ -49,7 +51,7 @@ class MYSQL:
         '''
 
         if not csv_path:
-            Logger.error(f"{csv_path} 不存在")
+            logger.error(f"{csv_path} 不存在")
             return
 
         escaped_path = pymysql.converters.escape_string(csv_path)
@@ -60,11 +62,11 @@ class MYSQL:
             with self.mysql_connection.cursor() as cursor:
                 cursor.execute(f"SHOW TABLES LIKE '{escaped_table}'")
                 if not cursor.fetchone():
-                    Logger.error(f"表 {table_name} 不存在")
-                    Logger.info(f"创建表 {table_name}")
+                    logger.error(f"表 {table_name} 不存在")
+                    logger.info(f"创建表 {table_name}")
                     self.create_table(table_name, self.headers) #TODO: headers
         except Exception as e:
-            Logger.error(f"查询表 {table_name} 失败: {e}")
+            logger.error(f"查询表 {table_name} 失败: {e}")
             sys.exit(1)
 
         load_data_sql = f"""
@@ -82,9 +84,9 @@ class MYSQL:
             with self.mysql_connection.cursor() as cursor:
                 cursor.execute(load_data_sql)
                 self.mysql_connection.commit()
-            Logger.info(f"成功导入数据到表 {table_name},共 {cursor.rowcount} 行")
+            logger.info(f"成功导入数据到表 {table_name},共 {cursor.rowcount} 行")
         except Exception as e:
-            Logger.error(f"导入数据到表 {table_name} 失败: {e}")
+            logger.error(f"导入数据到表 {table_name} 失败: {e}")
         finally:
             self.mysql_connection.close()
 
@@ -101,6 +103,6 @@ class MYSQL:
             with self.mysql_connection.cursor() as cursor:
                 cursor.execute(create_table_sql)
                 self.mysql_connection.commit()
-            Logger.info(f"成功创建表 {table_name}")
+            logger.info(f"成功创建表 {table_name}")
         except Exception as e:
-            Logger.error(f"创建表 {table_name} 失败: {e}")
+            logger.error(f"创建表 {table_name} 失败: {e}")
