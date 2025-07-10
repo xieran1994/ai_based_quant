@@ -16,11 +16,7 @@ This is a project for self studying coding and quant finance. Including backtest
 ```bash
 irm http://astral.sh.uv.install.ps1 | iex
 ```
-或者使用
-```bash
-pip
-```
-安装
+或者使用`pip`安装
 
 ```bash
 pip install uv
