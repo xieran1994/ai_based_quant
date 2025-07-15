@@ -1,5 +1,6 @@
 import pymysql
 import sys
+import csv
 
 from typing import Union
 
@@ -64,7 +65,8 @@ class MYSQL:
                 if not cursor.fetchone():
                     logger.error(f"表 {table_name} 不存在")
                     logger.info(f"创建表 {table_name}")
-                    self.create_table(table_name, self.headers) #TODO: headers
+                    headers = self._get_csv_header(csv_path)
+                    self.create_table(cursor, table_name, headers) 
         except Exception as e:
             logger.error(f"查询表 {table_name} 失败: {e}")
             sys.exit(1)
@@ -72,14 +74,15 @@ class MYSQL:
         load_data_sql = f"""
             LOAD DATA LOCAL INFILE '{escaped_path}'
             INTO TABLE {escaped_table}
+            CHARACTER SET gbk
             FIELDS TERMINATED BY '{escaped_delimiter}'
-            OPTIONALLY ENCLOSED BY '\"'
-            LINES TERMINATED BY '\\n'
+            OPTIONALLY ENCLOSED BY '"'
+            LINES TERMINATED BY '\r\n'
             IGNORE {ignore_lines} LINES
             """
-        with self.mysql_connection.cursor() as cursor:
-            cursor.execute("SET GLOBAL local_infile = 1")
-            self.mysql_connection.commit()
+        # with self.mysql_connection.cursor() as cursor:
+        #     cursor.execute(f"SET GLOBAL local_infile = 1")
+        #     self.mysql_connection.commit()
         try:
             with self.mysql_connection.cursor() as cursor:
                 cursor.execute(load_data_sql)
@@ -90,7 +93,7 @@ class MYSQL:
         finally:
             self.mysql_connection.close()
 
-    def create_table(self, table_name: str, headers: zip) -> None:
+    def create_table(self, cursor: pymysql.cursors.Cursor, table_name: str, headers: zip) -> None:
         '''
         :param table_name: 表名
         :return: None
@@ -100,9 +103,29 @@ class MYSQL:
         create_table_sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(cols)})"
 
         try:
-            with self.mysql_connection.cursor() as cursor:
-                cursor.execute(create_table_sql)
-                self.mysql_connection.commit()
+            cursor.execute(create_table_sql)
+            self.mysql_connection.commit()
             logger.info(f"成功创建表 {table_name}")
         except Exception as e:
             logger.error(f"创建表 {table_name} 失败: {e}")
+
+    def _get_csv_header(self, csv_path: str) -> zip:
+        '''
+        :param csv_path: csv文件路径
+        :return: zip
+        '''
+
+        with open(csv_path, 'r') as f:
+            lines = f.readlines()[1:] # xbx的csv第一行有广子，忽略第一行
+            reader = csv.reader(lines)
+            headers = next(reader)
+
+            sample_row = next(reader)
+            col_types = []
+            for value in sample_row:
+                if value.isdigit():
+                    col_types.append('INT')
+                else:
+                    col_types.append('VARCHAR(255)')
+
+            return zip(headers, col_types)

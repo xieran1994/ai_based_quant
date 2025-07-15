@@ -11,3 +11,4 @@ wheels/
 
 # Test data
 test_data/
+test.py

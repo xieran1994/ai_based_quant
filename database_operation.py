@@ -9,7 +9,7 @@ def ingest_data_from_csv(csv_path:Path) -> None:
     csv_path :str = str(csv_path)
     table_name :str = csv_path.split('\\')[-1].split('.')[0]
     # 数据入库
-    mysql.load_data_local_infile(csv_path=csv_path, table_name=table_name)
+    mysql.load_data_local_infile(csv_path=csv_path, table_name=table_name, ignore_lines=2)
 
 
 
