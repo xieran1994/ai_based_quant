@@ -9,7 +9,9 @@ def ingest_data_from_csv(csv_path:Path) -> None:
     csv_path :str = str(csv_path)
     table_name :str = csv_path.split('\\')[-1].split('.')[0]
     # 数据入库
-    mysql.load_data_local_infile(csv_path=csv_path, table_name=table_name, ignore_lines=2)
+    # 中文编码需要指定为gbk， 默认为utf-8
+    # 忽略csv文件前两行，xbx文件第一行为光子，第二行为表头
+    mysql.load_data_local_infile(csv_path=csv_path, table_name=table_name, ignore_lines=2, decoder='gbk')
 
 
 

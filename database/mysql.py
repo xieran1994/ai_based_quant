@@ -44,7 +44,7 @@ class MYSQL:
             logger.error(f"数据库连接失败: {e}")
             sys.exit(1)
 
-    def load_data_local_infile(self, csv_path: str, table_name: str, delimiter: str = ',', ignore_lines: int = 1) -> None:
+    def load_data_local_infile(self, csv_path: str, table_name: str, delimiter: str = ',', ignore_lines: int = 1, decoder: str = 'utf8mb4') -> None:
         '''
         :param csv_path: csv文件路径
         :param table_name: 表名
@@ -74,7 +74,7 @@ class MYSQL:
         load_data_sql = f"""
             LOAD DATA LOCAL INFILE '{escaped_path}'
             INTO TABLE {escaped_table}
-            CHARACTER SET gbk
+            CHARACTER SET {decoder}
             FIELDS TERMINATED BY '{escaped_delimiter}'
             OPTIONALLY ENCLOSED BY '"'
             LINES TERMINATED BY '\r\n'
@@ -87,7 +87,7 @@ class MYSQL:
             with self.mysql_connection.cursor() as cursor:
                 cursor.execute(load_data_sql)
                 self.mysql_connection.commit()
-            logger.info(f"成功导入数据到表 {table_name},共 {cursor.rowcount} 行")
+            logger.info(f"成功导入数据到表 {table_name}, 共 {cursor.rowcount} 行")
         except Exception as e:
             logger.error(f"导入数据到表 {table_name} 失败: {e}")
         finally:
