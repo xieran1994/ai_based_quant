@@ -6,12 +6,8 @@ def main():
     # 回测
     # 实盘
     # 。。。
-    my = MYSQL()
+    MYSQL()
 
 
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
