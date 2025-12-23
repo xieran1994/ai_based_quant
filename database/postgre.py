@@ -14,9 +14,9 @@ class PostgreSQL:
         self,
         host: str = "localhost",
         port: int = 5432,
-        database: str = "postgres",
+        database: str = "A",
         user: str = "postgres",
-        password: str = "postgres",
+        password: str = "123456",
     ):
         """
         初始化PostgreSQL连接
